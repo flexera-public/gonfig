@@ -137,10 +137,8 @@ var ({{range .Tree.Children}}
 	{{.Name}} {{.TypeName}}{{end}}
 )
 {{range .Configs}}{{if eq .Type.String "struct"}}
-{{.FormatRaw}}
-{{end}}{{end}}
+{{.FormatRaw}}{{end}}{{end}}
 {{.Tree.FormatRaw}}
-
 // Load reads the JSON at the given path and initializes the package variables with the
 // corresponding values.
 func Load(path string) error {
