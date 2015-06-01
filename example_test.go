@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
@@ -35,9 +36,14 @@ var _ = Describe("gonfig example", func() {
 			Ω(session.Out.Contents()).Should(Equal([]byte("config.go\n")))
 		})
 
-		It("generates Go code that compiles", func() {
-			_, err := Build("github.com/rightscale/gonfig/example")
+		It("generates Go code that compiles and runs", func() {
+			ex, err := Build("github.com/rightscale/gonfig/example")
+			cmd := exec.Command(ex)
+			cmd.Dir = exampleDir
+			session, err := Start(cmd, GinkgoWriter, GinkgoWriter)
 			Ω(err).ShouldNot(HaveOccurred())
+			Ω(session.Wait().Err.Contents()).Should(BeEmpty())
+			Ω(session.Out.Contents()).Should(Equal([]byte("ok\n")))
 		})
 
 		AfterEach(func() {
@@ -48,5 +54,6 @@ var _ = Describe("gonfig example", func() {
 
 	AfterEach(func() {
 		CleanupBuildArtifacts()
+		os.Remove(filepath.Join(exampleDir, "config.go"))
 	})
 })
